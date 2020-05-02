@@ -17,13 +17,13 @@ def decode_frase (frase, numero_casas):
     frase_criptografada = frase.split(' ')
     frase_final = ''
     palavra_final = ''
-    palavra_cript = ''
 
     for palavra_cripografada in frase_criptografada:
-        for ins,letra in palavra_cripografada:
-            palavra_cript = palavra_cript + (decode_letra(letra, numero_casas))
-            print(palavra_cript)
-        palavra_final = palavra_final + palavra_cript
+        palavra_final = ''
+        for letra in palavra_cripografada:
+            palavra_final += (decode_letra(letra, numero_casas))
+
+        frase_final += palavra_final + ' '
 
     return frase_final
 
