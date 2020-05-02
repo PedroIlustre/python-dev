@@ -42,7 +42,13 @@ try:
     arquivo_json = open('answer.json','r')
     dados_json = json.load(arquivo_json)
     frase_final = decode_frase(dados_json['cifrado'], dados_json['numero_casas'])
-    print(frase_final)
+    dados_json['decifrado'] = frase_final
+    arquivo_json.close()
+
+    arquivo_json = open('answer.json','w')
+    dados_json = json.dumps(dados_json)
+    arquivo_json.write(dados_json)
+    arquivo_json.close()
 
 except Exception as erro:
     print('Erro ao abrir arquivo json:'+format(erro))
