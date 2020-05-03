@@ -7,7 +7,7 @@ response = requests.get('https://api.codenation.dev/v1/challenge/dev-ps/generate
 
 def decode_letra (letra, numero_casas):
     alfabeto = 'abcdefghijklmnopqrstuvwxyz'
-    posicao = alfabeto.find(letra)
+    posicao = alfabeto.find(letra.lower())
     if posicao < 0:
         return letra
 
