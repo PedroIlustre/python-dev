@@ -51,15 +51,15 @@ try:
     with open('answer.json','w') as arquivo_json:
         dados_json = json.dumps(dados_json)
         arquivo_json.write(dados_json)
-    time.sleep(2.4)
+
     # Insere o resumo criptográfico do texto decodificado
-    #with open('answer.json','r') as arquivo_json:
-    #    dados_json = json.load(arquivo_json)
+    with open('answer.json','r') as arquivo_json:
+        dados_json = json.load(arquivo_json)
+        dados_json['resumo_criptografico'] = hashlib.sha1(dados_json['decifrado'].encode()).hexdigest()
         
 
     with open('answer.json','w') as arquivo_json:
         dados_json = json.dumps(dados_json)
-        dados_json['resumo_criptografico'] = hashlib.sha1(dados_json['decifrado'].encode()).hexdigest()
         arquivo_json.write(dados_json)
         arquivo_json.close()
 
