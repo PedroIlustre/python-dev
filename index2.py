@@ -1,5 +1,7 @@
 import requests
 import json
+import hashlib
+import time
 
 response = requests.get('https://api.codenation.dev/v1/challenge/dev-ps/generate-data?token=11721f372b13c7a37a739108ba8ff3d8085bf205')
 
@@ -39,18 +41,29 @@ except Exception as erro:
     print('Erro Tipo:'+format(type(erro)))
 
 try:
-    arquivo_json = open('answer.json','r')
-    dados_json = json.load(arquivo_json)
-    frase_final = decode_frase(dados_json['cifrado'], dados_json['numero_casas'])
-    dados_json['decifrado'] = frase_final
-    arquivo_json.close()
+    # Decodifica o texto
+    with open('answer.json','r') as arquivo_json:
+        dados_json = json.load(arquivo_json)
+        frase_final = decode_frase(dados_json['cifrado'], dados_json['numero_casas'])
+        dados_json['decifrado'] = frase_final
 
-    arquivo_json = open('answer.json','w')
-    dados_json = json.dumps(dados_json)
-    arquivo_json.write(dados_json)
-    arquivo_json.close()
+    # Atualiza o texto decodificado
+    with open('answer.json','w') as arquivo_json:
+        dados_json = json.dumps(dados_json)
+        arquivo_json.write(dados_json)
+    time.sleep(2.4)
+    # Insere o resumo criptográfico do texto decodificado
+    #with open('answer.json','r') as arquivo_json:
+    #    dados_json = json.load(arquivo_json)
+        
+
+    with open('answer.json','w') as arquivo_json:
+        dados_json = json.dumps(dados_json)
+        dados_json['resumo_criptografico'] = hashlib.sha1(dados_json['decifrado'].encode()).hexdigest()
+        arquivo_json.write(dados_json)
+        arquivo_json.close()
 
 except Exception as erro:
-    print('Erro ao abrir arquivo json:'+format(erro))
+    print('Erro ao atualizar arquivo json:'+format(erro))
     print('Erro Tipo:'+format(type(erro)))
 
