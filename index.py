@@ -56,5 +56,3 @@ class InstagramBot:
 ilustreBot = InstagramBot('ilustre.fotografia','seamous9wild')
 ilustreBot.login()
 
-        
-        
