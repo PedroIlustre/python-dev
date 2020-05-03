@@ -1,76 +1,58 @@
-import requests
-import json
-import hashlib
+from selenium import webdriver 
+from selenium.webdriver.common.keys import Keys
+import time
 
-response = requests.get('https://api.codenation.dev/v1/challenge/dev-ps/generate-data?token=11721f372b13c7a37a739108ba8ff3d8085bf205')
 
-def decode_letra (letra, numero_casas):
-    alfabeto = 'abcdefghijklmnopqrstuvwxyz'
-    posicao = alfabeto.find(letra.lower())
-    if posicao < 0:
-        return letra
+class InstagramBot:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.driver = webdriver.Firefox(executable_path=r'C:\Users\ilustre\Desktop\geckodriver.exe')
 
-    posicao = posicao-numero_casas
+        # //a[@href='/account/login/?source=auth_switcher']
+        # //input[@name='username']
+        # //input[@name='password']
 
-    if posicao < 0:
-        posicao = len(alfabeto) + posicao
+    def login(self):
+        driver = self.driver
+        driver.get('https://www.instagram.com')
+        time.sleep(5)
+        login_button = driver.find_element_by_xpath("//a[@href='/accounts/login/?source=auth_switcher']")
+        login_button.click()
+        user_element = driver.find_element_by_xpath("//input[@name='username']")
+        user_element.clear()
+        user_element.send_keys(self.username)
+        password_element = driver.find_element_by_xpath("//input[@name='password']")
+        password_element.clear()
+        password_element.send_keys(self.password)
+        password_element.send_keys(Keys.RETURN)
+        time.sleep(9)
+        self.curtir_fotos('campobom')
 
-    return alfabeto[posicao]
 
-def decode_frase (frase, numero_casas):
-    frase_criptografada = frase.split(' ')
-    frase_final = ''
-    palavra_final = ''
+    def curtir_fotos(self, hashtag):
+        driver = self.driver
+        driver.get('https://www.instagram.com/explore/tags/'+ hashtag + '/')
+        time.sleep(10)
+        for i in range(1, 100):
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+        hrefs = driver.find_elements_by_tag_name('a')
+        pic_hrefs = [elem.get_attribute('href') for elem in hrefs]
+        [href for href in pic_hrefs if hashtag in href]
+        print(hashtag + ' fotos: ' + str(len(pic_hrefs)))
 
-    for palavra_cripografada in frase_criptografada:
-        palavra_final = ''
-        for letra in palavra_cripografada:
-            palavra_final += (decode_letra(letra, numero_casas))
+        for pic_hrefs in pic_hrefs:
+            driver.get(pic_hrefs)
+            #driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+            try:
+                driver.find_element_by_xpath('//button[@class="dCJp8 afkep"]').click()
+                time.sleep(20)
+            except Exception as e:
+                print(e)
+                time.sleep(5)
 
-        frase_final += palavra_final + ' '
 
-    return frase_final
-
-try:
-    with open('answer.json', 'w') as json_file:
-        json.dump(response.json(), json_file, indent=4)
-
-except Exception as erro:
-    print('Erro ao Salvar arquivo json:'+format(erro))
-    print('Erro Tipo:'+format(type(erro)))
-
-try:
-    # Decodifica o texto
-    with open('answer.json','r') as arquivo_json:
-        dados_json = json.load(arquivo_json)
-        frase_final = decode_frase(dados_json['cifrado'], dados_json['numero_casas'])
-        dados_json['decifrado'] = frase_final.strip()
-
-    # Atualiza o texto decodificado
-    with open('answer.json','w') as arquivo_json:
-        dados_json = json.dumps(dados_json)
-        arquivo_json.write(dados_json)
-
-    # Insere o resumo criptográfico do texto decodificado
-    with open('answer.json','r') as arquivo_json:
-       dados_json = json.load(arquivo_json)
-       texto_decifrado = dados_json['decifrado'].encode()
-       dados_json['resumo_criptografico'] = hashlib.sha1(texto_decifrado).hexdigest()       
-
-    with open('answer.json','w') as arquivo_json:
-        dados_json = json.dumps(dados_json)
-        arquivo_json.write(dados_json)
-    
-
-    # Envia o arquivo para a url informada
-    url = 'https://api.codenation.dev/v1/challenge/dev-ps/submit-solution?token=11721f372b13c7a37a739108ba8ff3d8085bf205'
-    files = {'answer': open('answer.json', 'rb')}
-    r = requests.post(url, files=files)
-    print(r.content)
-        
-
-        
-except Exception as erro:
-    print('Erro ao atualizar arquivo json:'+format(erro))
-    print('Erro Tipo:'+format(type(erro)))
+ilustreBot = InstagramBot('ilustre.fotografia','seamous9wild')
+ilustreBot.login()
 
