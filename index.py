@@ -53,6 +53,6 @@ class InstagramBot:
                 time.sleep(5)
 
 
-ilustreBot = InstagramBot('ilustre.fotografia','seamous9wild')
+ilustreBot = InstagramBot('ilustre.fotografia','')
 ilustreBot.login()
 
